@@ -1,0 +1,246 @@
+const int sensorPin0 = A0;
+const int sensorPin1 = A1;
+const int sensorPin2 = A2;
+const int sensorPin3 = A3;
+const int sensorPin4 = A4;
+
+const int infbPin = 12;
+const int inb1Pin = 13;
+const int inf2Pin = 7;
+const int inb2Pin = 4;
+
+const int coorx0 = replace;
+const int coory0 = replace;
+const int coorx1 = replace;
+const int coory1 = replace;
+const int coorx2 = replace;
+const int coory2 = replace;
+const int coorx3 = replace;
+const int coory3 = replace;
+const int coorx4 = coorx0;
+const int coory4 = coory0;
+
+const int delaya = replace;
+const int delayz = replace;
+
+void move_right()
+{
+    digitalWrite(infbPin, HIGH);
+    digitalWrite(inb2Pin, HIGH);
+    delay(delaya);
+    digitalWrite(infbPin, LOW);
+    digitalWrite(inb2Pin, LOW);
+}
+void move_left()
+{
+    digitalWrite(inf2Pin, HIGH);
+    digitalWrite(inb1Pin, HIGH);
+    delay(delaya);
+    digitalWrite(inf2Pin, LOW);
+    digitalWrite(inb1Pin, LOW);
+}
+void move_back()
+{
+
+    digitalWrite(inb1Pin, HIGH);
+    digitalWrite(inb2Pin, HIGH);
+    delay(delayz);
+    digitalWrite(inb1Pin, LOW);
+    digitalWrite(inb2Pin, LOW);
+}
+void move_forw()
+{
+
+    digitalWrite(inf2Pin, HIGH);
+    digitalWrite(infbPin, HIGH);
+    delay(delayz);
+    digitalWrite(inf2Pin, LOW);
+    digitalWrite(infbPin, LOW);
+}
+void staythere()
+{
+    digitalWrite(inf2Pin, LOW);
+    digitalWrite(infbPin, LOW);
+    digitalWrite(inb1Pin, LOW);
+    digitalWrite(inb2Pin, LOW);
+    delay(delaya);
+}
+// void move_forwd()
+// {
+//     digitalWrite(infbPin, HIGH);
+//     digitalWrite(inf2Pin, HIGH);
+// }
+
+void setup()
+{
+    Serial.begin(9600);
+    pinMode(infbPin, OUTPUT);
+    pinMode(inb1Pin, OUTPUT);
+    pinMode(inf2Pin, OUTPUT);
+    pinMode(inb2Pin, OUTPUT);
+}
+
+void loop()
+{
+    int rate0 = analogRead(sensorPin0);
+    int rate1 = analogRead(sensorPin1);
+    int rate2 = analogRead(sensorPin2);
+    int rate3 = analogRead(sensorPin3);
+    int rate4 = analogRead(sensorPin4);
+    staythere();
+
+    if ((rate0 > rate1) and (rate0 > rate2) and (rate0 > rate3) and (rate0 > rate4))
+    {
+        if ((coorx4 == coorx0) && (coory4 == coory0))
+        {
+            staythere();
+        }
+
+        else if ((coorx4 == coorx1) && (coory4 == coory1))
+        {
+            move_left();
+            move_forw();
+            move_right();
+            coorx4 = coorx0;
+            coory4 = coory0;
+        }
+        else if ((coorx4 == coorx2) && (coory4 == coory2))
+        {
+            move_forw();
+            coorx4 = coorx0;
+            coory4 = coory0;
+        }
+        else if ((coorx4 == coorx3) && (coory4 == coory3))
+        {
+            move_forw();
+            move_left();
+            move_forw();
+            move_right();
+            coorx4 = coorx0;
+            coory4 = coory0;
+        }
+    }
+    else if ((rate1 > rate0) and (rate1 > rate2) and (rate1 > rate3) and (rate1 > rate4))
+    {
+        if ((coorx4 == coorx1) && (coory4 == coory1))
+        {
+            staythere();
+        }
+
+        else if ((coorx4 == coorx0) && (coory4 == coory0))
+        {
+            move_right();
+            move_forw();
+            move_left();
+            coorx4 = coorx1;
+            coory4 = coory1;
+        }
+        else if ((coorx4 == coorx2) && (coory4 == coory2))
+        {
+            move_forw();
+            move_right();
+            move_forw();
+            move_left();
+            coorx4 = coorx1;
+            coory4 = coory1;
+        }
+        else if ((coorx4 == coorx3) && (coory4 == coory3))
+        {
+            move_forw();
+            coorx4 = coorx1;
+            coory4 = coory1;
+        }
+    }
+    else if ((rate2 > rate1) and (rate2 > rate0) and (rate2 > rate3) and (rate2 > rate4))
+    {
+        if ((coorx4 == coorx2) && (coory4 == coory2))
+        {
+            staythere();
+        }
+        else if ((coorx4 == coorx0) && (coory4 == coory0))
+        {
+            move_back();
+            coorx4 = coorx2;
+            coory4 = coory2;
+        }
+        else if ((coorx4 == coorx1) && (coory4 == coory1))
+        {
+            move_left();
+            move_forw();
+            move_right();
+            move_back();
+            coorx4 = coorx2;
+            coory4 = coory2;
+        }
+        else if ((coorx4 == coorx3) && (coory4 == coory3)
+        {
+            move_left();
+            move_forw();
+            move_right();
+            coorx4 = coorx2;
+            coory4 = coory2;
+        }
+    }
+    else if ((rate3 > rate1) and (rate3 > rate2) and (rate3 > rate0) and (rate3 > rate4))
+    {
+        if ((coorx4 == coorx3) && (coory4 == coory3))
+        {
+            staythere();
+        }
+        else if ((coorx4 == coorx1) && (coory4 == coory1))
+        {
+            move_back();
+            coorx4 = coorx3;
+            coory4 = coory3;
+        }
+        else if ((coorx4 == coorx2) && (coory4 == coory2))
+        {
+            move_right();
+            move_forw();
+            move_left();
+            coorx4 = coorx3;
+            coory4 = coory3;
+        }
+        else if ((coorx4 == coorx0) && (coory4 == coory0))
+        {
+            move_back();
+            move_right();
+            move_forw();
+            move_left();
+            coorx4 = coorx3;
+            coory4 = coory3;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
