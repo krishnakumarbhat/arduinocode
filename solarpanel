@@ -1,246 +1,405 @@
-const int sensorPin0 = A0;
-const int sensorPin1 = A1;
-const int sensorPin2 = A2;
-const int sensorPin3 = A3;
-const int sensorPin4 = A4;
-
-const int infbPin = 12;
-const int inb1Pin = 13;
-const int inf2Pin = 7;
-const int inb2Pin = 4;
-
-const int coorx0 = replace;
-const int coory0 = replace;
-const int coorx1 = replace;
-const int coory1 = replace;
-const int coorx2 = replace;
-const int coory2 = replace;
-const int coorx3 = replace;
-const int coory3 = replace;
-const int coorx4 = coorx0;
-const int coory4 = coory0;
-
-const int delaya = replace;
-const int delayz = replace;
-
-void move_right()
-{
-    digitalWrite(infbPin, HIGH);
-    digitalWrite(inb2Pin, HIGH);
-    delay(delaya);
-    digitalWrite(infbPin, LOW);
-    digitalWrite(inb2Pin, LOW);
+int ap1=A1;  //pin analization 
+int ap2=A2;  //ap means analog pin
+int ap3=A3;
+int ap4=A4;
+int in1=12;   // motot input pin
+int in2=11;
+int in3=6;
+int in4=5;
+int en1=13;  //motor output pin
+int en2=7;    //motor enable pins
+int a=1;      // position initialization
+int b=1;
+int l=1;      //intensity initialization
+int n=1;      //direction initialization
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+pinMode(13,OUTPUT);
+pinMode(12,OUTPUT);
+pinMode(11,OUTPUT);
+pinMode(7,OUTPUT);
+pinMode(6,OUTPUT);
+pinMode(5,OUTPUT);
 }
-void move_left()
-{
-    digitalWrite(inf2Pin, HIGH);
-    digitalWrite(inb1Pin, HIGH);
-    delay(delaya);
-    digitalWrite(inf2Pin, LOW);
-    digitalWrite(inb1Pin, LOW);
-}
-void move_back()
-{
 
-    digitalWrite(inb1Pin, HIGH);
-    digitalWrite(inb2Pin, HIGH);
-    delay(delayz);
-    digitalWrite(inb1Pin, LOW);
-    digitalWrite(inb2Pin, LOW);
-}
-void move_forw()
-{
 
-    digitalWrite(inf2Pin, HIGH);
-    digitalWrite(infbPin, HIGH);
-    delay(delayz);
-    digitalWrite(inf2Pin, LOW);
-    digitalWrite(infbPin, LOW);
+void movefor()
+{
+  digitalWrite(in1,HIGH);
+  digitalWrite(in2,LOW);
+  digitalWrite(in3,HIGH);
+  digitalWrite(in4,LOW);
+  delay(700);
 }
+
+void moveback()
+{
+  digitalWrite(in1,LOW);
+  digitalWrite(in2,HIGH);
+  digitalWrite(in3,LOW);
+  digitalWrite(in4,HIGH);
+  delay(700);
+}
+
+void movelhrl()                 //left wheel high right wheel low.. can compare it to clockwise movement
+{
+  digitalWrite(in1,HIGH);
+  digitalWrite(in2,LOW);
+  digitalWrite(in3,LOW);
+  digitalWrite(in4,HIGH);
+  delay(700);
+}
+
+void movellrh()                 //left wheel low right wheel high.. can compare it to anti clockwise movement
+{
+  digitalWrite(in1,LOW);
+  digitalWrite(in2,HIGH);
+  digitalWrite(in3,HIGH);
+  digitalWrite(in4,LOW);
+  delay(700);
+}
+
 void staythere()
 {
-    digitalWrite(inf2Pin, LOW);
-    digitalWrite(infbPin, LOW);
-    digitalWrite(inb1Pin, LOW);
-    digitalWrite(inb2Pin, LOW);
-    delay(delaya);
+  digitalWrite(in1,LOW);
+  digitalWrite(in2,LOW);
+  digitalWrite(in3,LOW);
+  digitalWrite(in4,LOW);
+  delay(700);
 }
-// void move_forwd()
-// {
-//     digitalWrite(infbPin, HIGH);
-//     digitalWrite(inf2Pin, HIGH);
-// }
+void loop() {
+  // put your main code here, to run repeatedly:
+int av1=analogRead(ap1);
+int av2=analogRead(ap2);
+int av3=analogRead(ap3); //ap means analog pin
+int av4=analogRead(ap4); //av means analog value
+Serial.println(av1);
+Serial.println(av2);
+Serial.println(av3);
+Serial.println(av4);
+Serial.println("a");
 
-void setup()
+//the below process is to determine whether which sensor receives higher sensitivity of light 
+
+
+if((av1>av2)&&(av1>av3)&&(av1>av4))
 {
-    Serial.begin(9600);
-    pinMode(infbPin, OUTPUT);
-    pinMode(inb1Pin, OUTPUT);
-    pinMode(inf2Pin, OUTPUT);
-    pinMode(inb2Pin, OUTPUT);
+  l=1;
+}
+else if((av2>av1)&&(av2>av3)&&(av2>av4))
+{
+  l=2;
+}
+else if((av3>av1)&&(av3>av2)&&(av3>av4))
+{
+  l=3;
 }
 
-void loop()
+else if((av4>av1)&&(av4>av2)&&(av4>av3))
 {
-    int rate0 = analogRead(sensorPin0);
-    int rate1 = analogRead(sensorPin1);
-    int rate2 = analogRead(sensorPin2);
-    int rate3 = analogRead(sensorPin3);
-    int rate4 = analogRead(sensorPin4);
+  l=4;
+}
+
+else if( ((av1==av2)&&(av1>av3)&&(av1>av4)) | ((av1==av3)&&(av1>av2)&&(av1>av4)) | ((av1==av3)&&(av1>av2)&&(av1>av4)) | ((av1==av2)&&(av1==av3)&&(av1>av4)) | ((av1==av2)&&(av1==av4)&&(av1>av3)) | ((av1==av3)&&(av1==av4)&&(av1>av2)))
+{
+  l=11;
+}
+else if( ((av2==av1)&&(av2>av3)&&(av2>av4)) | ((av2==av3)&&(av2>av2)&&(av2>av4)) | ((av2==av3)&&(av2>av1)&&(av2>av4)) | ((av2==av3)&&(av2==av4)&&(av2>av1)) | ((av2==av1)&&(av2==av4)&&(av2>av3)) | ((av2==av3)&&(av2==av3)&&(av2>av4)))
+{
+  l=22;
+}
+else if( ((av3==av1)&&(av3>av2)&&(av3>av4)) | ((av3==av2)&&(av3>av1)&&(av3>av4)) | ((av3==av4)&&(av3>av2)&&(av3>av1)) | ((av3==av1)&&(av3==av2)&&(av3>av4)) | ((av3==av2)&&(av3==av4)&&(av3>av1)) | ((av3==av1)&&(av3==av4)&&(av3>av2)))
+{
+  l=33;
+}
+else if( ((av4==av1)&&(av4>av2)&&(av4>av3)) | ((av4==av2)&&(av4>av1)&&(av4>av3)) | ((av4==av3)&&(av4>av1)&&(av4>av2)) | ((av4==av1)&&(av4==av2)&&(av4>av3)) | ((av4==av2)&&(av4==av3)&&(av4>av1)) | ((av4==av3)&&(av4==av1)&&(av4>av2)))
+{
+  l=44;
+}
+
+Serial.println(l);
+
+digitalWrite(13,HIGH);
+digitalWrite(7,HIGH);
+//if ldr one is high
+if((l==1)|(l==11))
+{
+  
+  if((a==1)&&(b==1))         //same place 
+  {
     staythere();
-
-    if ((rate0 > rate1) and (rate0 > rate2) and (rate0 > rate3) and (rate0 > rate4))
+  }
+  
+  else if((a==1)&&(b==2))   //if its in different position other than one then there are 2 options for single place so i have given 2 values for each combination 
+  {
+    if(n==3)
     {
-        if ((coorx4 == coorx0) && (coory4 == coory0))
-        {
-            staythere();
-        }
-
-        else if ((coorx4 == coorx1) && (coory4 == coory1))
-        {
-            move_left();
-            move_forw();
-            move_right();
-            coorx4 = coorx0;
-            coory4 = coory0;
-        }
-        else if ((coorx4 == coorx2) && (coory4 == coory2))
-        {
-            move_forw();
-            coorx4 = coorx0;
-            coory4 = coory0;
-        }
-        else if ((coorx4 == coorx3) && (coory4 == coory3))
-        {
-            move_forw();
-            move_left();
-            move_forw();
-            move_right();
-            coorx4 = coorx0;
-            coory4 = coory0;
-        }
+      moveback();
+      n=1;
     }
-    else if ((rate1 > rate0) and (rate1 > rate2) and (rate1 > rate3) and (rate1 > rate4))
+    else if(n==4)
     {
-        if ((coorx4 == coorx1) && (coory4 == coory1))
-        {
-            staythere();
-        }
-
-        else if ((coorx4 == coorx0) && (coory4 == coory0))
-        {
-            move_right();
-            move_forw();
-            move_left();
-            coorx4 = coorx1;
-            coory4 = coory1;
-        }
-        else if ((coorx4 == coorx2) && (coory4 == coory2))
-        {
-            move_forw();
-            move_right();
-            move_forw();
-            move_left();
-            coorx4 = coorx1;
-            coory4 = coory1;
-        }
-        else if ((coorx4 == coorx3) && (coory4 == coory3))
-        {
-            move_forw();
-            coorx4 = coorx1;
-            coory4 = coory1;
-        }
+      movellrh();
+      moveback();
+      n=1;
     }
-    else if ((rate2 > rate1) and (rate2 > rate0) and (rate2 > rate3) and (rate2 > rate4))
+  }
+
+  else if((a==2)&&(b==1))
+  {
+    if(n==6)
     {
-        if ((coorx4 == coorx2) && (coory4 == coory2))
-        {
-            staythere();
-        }
-        else if ((coorx4 == coorx0) && (coory4 == coory0))
-        {
-            move_back();
-            coorx4 = coorx2;
-            coory4 = coory2;
-        }
-        else if ((coorx4 == coorx1) && (coory4 == coory1))
-        {
-            move_left();
-            move_forw();
-            move_right();
-            move_back();
-            coorx4 = coorx2;
-            coory4 = coory2;
-        }
-        else if ((coorx4 == coorx3) && (coory4 == coory3)
-        {
-            move_left();
-            move_forw();
-            move_right();
-            coorx4 = coorx2;
-            coory4 = coory2;
-        }
+      movefor();
+      n=2;
     }
-    else if ((rate3 > rate1) and (rate3 > rate2) and (rate3 > rate0) and (rate3 > rate4))
+    else if(n==5)
     {
-        if ((coorx4 == coorx3) && (coory4 == coory3))
-        {
-            staythere();
-        }
-        else if ((coorx4 == coorx1) && (coory4 == coory1))
-        {
-            move_back();
-            coorx4 = coorx3;
-            coory4 = coory3;
-        }
-        else if ((coorx4 == coorx2) && (coory4 == coory2))
-        {
-            move_right();
-            move_forw();
-            move_left();
-            coorx4 = coorx3;
-            coory4 = coory3;
-        }
-        else if ((coorx4 == coorx0) && (coory4 == coory0))
-        {
-            move_back();
-            move_right();
-            move_forw();
-            move_left();
-            coorx4 = coorx3;
-            coory4 = coory3;
-        }
+      
+      movelhrl();
+      movefor();
+      n=2;
     }
+  }
+
+  else if((a==2)&&(b==2))
+  {
+    if(n=7)
+    {
+      movefor();
+      movelhrl();
+      movefor();
+      n=2;
+    }
+    else if(n==8)
+    {
+      moveback();
+      movellrh();
+      moveback();
+      n=1;
+    }
+  }
+
+  a=1;                      /////a and b are intitialized because it has to know which if loop it has entered and  its corresponding position at time after execution of the loop i.e where the bot is after a successful movement
+  b=1;
+}
+
+//if ldr 2 is more
+else if((l==2)|(l==22))
+{
+  
+  if((a==1)&&(b==2))
+  {
+    staythere();
+  }
+  
+  else if((a==1)&&(b==1))
+  {
+    if(n==1)
+    {
+     movefor();
+      n=3;
+    }
+    else if(n==2)
+    {
+      movelhrl();
+      movefor();
+      n=3;
+    }
+  }
+
+  else if((a==2)&&(b==1))
+  {
+    if(n==6)
+    {
+      movefor();
+      movelhrl();
+      movefor();
+      n=3;
+    }
+    else if(n==5)
+    {
+      moveback();
+      movellrh();
+      moveback();
+      n=4;
+    }
+  }
+
+  else if((a==2)&&(b==2))
+  {
+    if(n==8)
+    {
+      moveback();
+      n=4;
+    }
+    else if(n==7)
+    {
+      movellrh();
+      moveback();
+      n=4;
+    }
+  }
+
+  a=1;
+  b=2;
+}
 
 
+//if ldr 3 is more
+else if((l==3)|(l==33))
+{
+  
+  if((a==2)&&(b==1))
+  {
+    staythere();
+  }
+  
+  else if((a==1)&&(b==1))
+  {
+    if(n==2)
+    {
+      moveback();
+      n=6;
+    }
+    else if(n==1)
+    {
+      movellrh();
+      moveback();
+      n=6;
+    }
+  }
+
+  else if((a==1)&&(b==2))
+  {
+    if(n==4)
+    {
+      movefor();
+      movelhrl();
+      movefor();
+      n=5;
+    }
+    else if(n==3)
+    {
+      moveback();
+      movellrh();
+      moveback();
+      n=6;
+    }
+  }
+
+  else if((a==2)&&(b==2))
+  {
+    if(n==7)
+    {
+      movefor();
+      n=5;
+    }
+    else if(n==8)
+    {
+      movelhrl();
+      movefor();
+      n=5;
+    }
+  }
+
+  a=2;
+  b=1;
+}
+
+//if ldr 4 is more
+else if((l==4)|(l==44))
+{
+  
+  if((a==2)&&(b==2))
+  {
+    staythere();
+  }
+  
+  else if((a==1)&&(b==1))
+  {
+    if(n==2)
+    {
+      moveback();
+      movellrh();
+      moveback();
+      n=7;
+    }
+    else if(n==1)
+    {
+      movefor();
+      movelhrl();
+      movefor();
+      n=8;
+    }
+  }
+
+  else if((a==1)&&(b==2))
+  {
+    if(n==3)
+    {
+      movelhrl();
+      movefor();
+      n=8;
+    }
+    else if(n==4)
+    {
+      movefor();
+      n=8;
+    }
+  }
+
+  else if((a==2)&&(b==1))
+  {
+    if(n==5)
+    {
+      moveback();
+      n=7;
+    }
+    else if(n==6)
+    {
+      movellrh();
+      moveback();
+      n=7;
+    }
+  }
+
+  a=2;
+  b=2;
+}
+
+delay(1000);
+l=1;
+}
 
 
+    // int calculateDistance(int trigPin)
+    // {
+    //     long duration; // This will store the measured duration of the pulse
+    //     digitalWrite(trigPin, LOW);
+    //     delayMicroseconds(2); // Stay low for 2μs to ensure a clean pulse
+    //     digitalWrite(trigPin, HIGH);
+    //     delayMicroseconds(10); // Send a pulse of 10μs to ensure a clean pulse
+    //     digitalWrite(trigPin, LOW);
+    //     // Read the duration of the response pulse
+    //     duration = pulseIn(echoPin, HIGH);
+    //     // convert time into distance
+    //     return duration / 29 / 2;
+    // }
 
+    // // extern int *__brkval;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    // // int memoryFree()
+    // // {
+    // //  int freeValue; // This will be the most recent object allocated on the
+    // // stack
+    // //  if(((int)__brkval == 0) // Heap is empty; use start of heap
+    // //  {
+    // //  freeValue = ((int)andfreeValue) - ((int)__malloc_heap_start);
+    // //  }
+    // //  else // Heap is not empty; use last heap address
+    // //  {
+    // //  freeValue = ((int)andfreeValue) - ((int)__brkval);
+    // //  }
+    // //  return freeValue;
+    // // }
